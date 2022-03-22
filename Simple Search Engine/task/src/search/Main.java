@@ -1,5 +1,6 @@
 package search;
 import java.util.*;
+import java.io.*;
 
 public class Main {
     enum Menu {
@@ -12,10 +13,12 @@ public class Main {
         }
     }
     static ArrayList<String> peopleList = new ArrayList<>();
-    static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner;
     static Menu menu;
+    static FileReader dataFile;
 
     public static void setMenu() {
+        scanner = new Scanner(System.in);
         System.out.print("""
                 === Menu ===
                 1. Find a person
@@ -31,11 +34,15 @@ public class Main {
         }
     }
 
-    public static void loadList(int inputLines) {
-        System.out.println();
-        System.out.println("Enter all people:");
-        for (int i = 0; i < inputLines; i++) {
-            peopleList.add(scanner.nextLine());
+    public static void loadList(String file) {
+        try {
+            dataFile = new FileReader(file);
+            scanner = new Scanner(dataFile);
+            while (scanner.hasNext()) {
+                peopleList.add(scanner.nextLine());
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -54,8 +61,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("Enter the number of people:");
-        loadList(Integer.parseInt(scanner.nextLine()));
+        String filePath = args[1];
+        loadList(filePath);
         System.out.println();
 
         do {
