@@ -13,6 +13,7 @@ public class Main {
         }
     }
     static ArrayList<String> peopleList = new ArrayList<>();
+    static HashMap<String, ArrayList<Integer>> peopleMap = new HashMap<>();
     static Scanner scanner;
     static Menu menu;
     static FileReader dataFile;
@@ -36,10 +37,21 @@ public class Main {
 
     public static void loadList(String file) {
         try {
+            int index = 0;
             dataFile = new FileReader(file);
             scanner = new Scanner(dataFile);
             while (scanner.hasNext()) {
                 peopleList.add(scanner.nextLine());
+                for (String name : peopleList.get(index).split(" ")) {
+                    if (peopleMap.containsKey(name.toLowerCase())) {
+                        peopleMap.get(name.toLowerCase()).add(index);
+                    } else {
+                        ArrayList<Integer> nameIndex = new ArrayList<>();
+                        nameIndex.add(index);
+                        peopleMap.put(name.toLowerCase(), nameIndex);
+                    }
+                }
+                index++;
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -47,14 +59,10 @@ public class Main {
     }
 
     public static void executeSearch() {
-        ArrayList<String> tempList = new ArrayList<>();
         System.out.println("Enter a name or email to search all suitable people.");
         String searchField = scanner.nextLine().toLowerCase();
-
-        peopleList.forEach(line -> { if (line.toLowerCase().contains(searchField)) tempList.add(line); });
-
-        if (!tempList.isEmpty()) {
-            tempList.forEach(System.out::println);
+        if (peopleMap.containsKey(searchField)) {
+            peopleMap.get(searchField).forEach(index -> System.out.println(peopleList.get(index)));
         } else {
             System.out.println("No matching people found.");
         }
